@@ -68,7 +68,7 @@ public enum Token {
     LEFT_PARENTHESIS("("),
     RIGHT_PARENTHESIS(")");
 
-    private final String spelling;
+    private String spelling;
     private int line;
     private int column;
 
@@ -83,7 +83,7 @@ public enum Token {
                 return token;
             }
         }
-        return Token.IDENTIFIER;
+        return Token.IDENTIFIER.value(spelling);
     }
 
     public String getSpelling() {
@@ -109,6 +109,11 @@ public enum Token {
     public void setPosition(int line, int column) {
         this.line = line;
         this.column = column;
+    }
+
+    public Token value(String value) {
+        this.spelling = value;
+        return this;
     }
 
     @Override

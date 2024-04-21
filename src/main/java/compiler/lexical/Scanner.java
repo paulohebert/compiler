@@ -62,9 +62,9 @@ public class Scanner {
                 do {
                     takeIt();
                 } while (Character.isDigit(currentChar));
-                return Token.FLOAT_LITERAL;
+                return Token.FLOAT_LITERAL.value(currentSpelling.toString());
             }
-            return Token.INTEGER_LITERAL;
+            return Token.INTEGER_LITERAL.value(currentSpelling.toString());
         } else {
             switch (currentChar) {
                 case '+':
@@ -110,7 +110,8 @@ public class Scanner {
                 case ')':
                     takeIt();
                     return Token.RIGHT_PARENTHESIS;
-                case Character.MAX_VALUE:
+                case Character.MAX_VALUE: // FIM DE ARQUIVO
+                    reader.close();
                     return Token.EOF;
                 default:
                     return Token.ERROR;
@@ -134,9 +135,5 @@ public class Scanner {
             default:
                 return false;
         }
-    }
-
-    public void close() throws IOException {
-        reader.close();
     }
 }
