@@ -8,6 +8,7 @@ import compiler.syntactic.Parser;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        /* Analisador Léxico */
         Scanner scanner = new Scanner("example.txt");
         /*
          * Token token;
@@ -18,6 +19,7 @@ public class Main {
          * }
          */
 
+        /* Analisador Sintático */
         Parser parser = new Parser();
         if (parser.parse(scanner)) {
             System.out.println("A sintaxe está correta");
