@@ -18,6 +18,7 @@ public class Assignment extends Command {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitAssignment(this);
     }
 }

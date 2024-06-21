@@ -14,6 +14,7 @@ public class CommandList extends AST {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitCommandList(this);
     }
 }

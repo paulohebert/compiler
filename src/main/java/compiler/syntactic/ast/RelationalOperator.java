@@ -14,7 +14,7 @@ public class RelationalOperator extends AST {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitRelationalOperator(this);
     }
-
 }

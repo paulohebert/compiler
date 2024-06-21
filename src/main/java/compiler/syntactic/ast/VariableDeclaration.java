@@ -18,6 +18,7 @@ public class VariableDeclaration extends AST {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitVariableDeclaration(this);
     }
 }

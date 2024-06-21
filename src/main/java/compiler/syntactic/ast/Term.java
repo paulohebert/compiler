@@ -30,6 +30,7 @@ public class Term extends AST {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitTerm(this);
     }
 }

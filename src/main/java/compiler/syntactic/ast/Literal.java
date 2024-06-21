@@ -14,6 +14,7 @@ public class Literal extends Factor {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitLiteral(this);
     }
 }

@@ -14,6 +14,7 @@ public class Identifier extends Factor {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitIdentifier(this);
     }
 }

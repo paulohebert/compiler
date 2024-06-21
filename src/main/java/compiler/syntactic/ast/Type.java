@@ -14,6 +14,7 @@ public class Type extends AST {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitType(this);
     }
 }

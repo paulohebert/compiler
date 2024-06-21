@@ -23,7 +23,7 @@ public class Conditional extends Command {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitConditional(this);
     }
-
 }

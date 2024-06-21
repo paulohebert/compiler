@@ -14,7 +14,7 @@ public class Declarations extends AST {
     }
 
     @Override
-    void visit() {
-
+    public void visit(Visitor v) {
+        v.visitDeclarations(this);
     }
 }

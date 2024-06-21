@@ -18,7 +18,7 @@ public class Body extends AST {
     }
 
     @Override
-    void visit() {
-
+    public void visit(Visitor v) {
+        v.visitBody(this);
     }
 }

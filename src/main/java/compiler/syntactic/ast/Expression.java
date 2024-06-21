@@ -30,6 +30,7 @@ public class Expression extends Factor {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitExpression(this);
     }
 }

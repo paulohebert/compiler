@@ -18,7 +18,7 @@ public class Iterative extends Command {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitIterative(this);
     }
-
 }

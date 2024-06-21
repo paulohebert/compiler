@@ -14,7 +14,7 @@ public class AddOperator extends AST {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitAddOperator(this);
     }
-
 }

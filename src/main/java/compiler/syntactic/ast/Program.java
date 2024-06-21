@@ -18,7 +18,7 @@ public class Program extends AST {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitProgram(this);
     }
-
 }

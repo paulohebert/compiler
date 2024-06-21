@@ -30,7 +30,7 @@ public class SimpleExpression extends AST {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitSimpleExpression(this);
     }
-
 }

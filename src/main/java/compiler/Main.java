@@ -5,6 +5,7 @@ import java.io.IOException;
 import compiler.lexical.Scanner;
 //import compiler.lexical.Token;
 import compiler.syntactic.Parser;
+import compiler.syntactic.ast.Program;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -20,8 +21,8 @@ public class Main {
          */
 
         /* Analisador Sintático */
-        Parser parser = new Parser();
-        if (parser.parse(scanner)) {
+        Program program = new Parser().parse(scanner);
+        if (program != null) {
             System.out.println("A sintaxe está correta");
         }
 

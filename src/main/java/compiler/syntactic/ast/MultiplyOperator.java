@@ -14,7 +14,7 @@ public class MultiplyOperator extends AST {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitMultiplyOperator(this);
     }
-
 }

@@ -12,6 +12,7 @@ public class CompoundCommand extends Command {
     }
 
     @Override
-    void visit() {
+    public void visit(Visitor v) {
+        v.visitCompoundCommand(this);
     }
 }

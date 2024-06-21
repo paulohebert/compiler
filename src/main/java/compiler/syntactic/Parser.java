@@ -30,25 +30,30 @@ public class Parser {
     private Token currentToken;
     private Scanner scanner;
 
-    public boolean parse(Scanner scanner) throws IOException {
-        this.scanner = scanner;
-        this.currentToken = scanner.scan();
+    /* Analisador Sintático */
+    public Program parse(Scanner scanner) throws IOException {
+        this.scanner = scanner; // Analisador Léxico
+        this.currentToken = scanner.scan(); // Obtém o primeiro token
+
+        // Obtém o Programa
         Program program = parseProgram();
+
         accept(Token.EOF); // Avalia se chegou no fim do arquivo
-        return true;
+
+        return program; // Retorna o Programa
     }
 
+    /* Avança para o próximo token */
     private void acceptIt() {
         try {
             currentToken = scanner.scan();
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new Error("Erro - Não foi possível ler o arquivo\n");
+            throw new Error("Erro - Não foi possível ler o arquivo\n" + e.getMessage());
         }
     }
 
+    /* Verifica se é o símbolo terminal esperado e avança para o próximo token */
     private void accept(Token expectedToken) {
-        // Verifica se é o símbolo terminal esperado
         if (currentToken == expectedToken) {
             acceptIt();
         } else {
