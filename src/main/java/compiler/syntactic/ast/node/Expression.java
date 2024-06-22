@@ -1,4 +1,6 @@
-package compiler.syntactic.ast;
+package compiler.syntactic.ast.node;
+
+import compiler.syntactic.ast.Visitor;
 
 public class Expression extends Factor {
     private final SimpleExpression simpleExpressionLeft;

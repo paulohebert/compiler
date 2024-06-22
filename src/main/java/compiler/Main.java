@@ -6,7 +6,7 @@ import compiler.lexical.Scanner;
 //import compiler.lexical.Token;
 import compiler.syntactic.Parser;
 import compiler.syntactic.ast.Printer;
-import compiler.syntactic.ast.Program;
+import compiler.syntactic.ast.node.Program;
 
 public class Main {
     public static void main(String[] args) throws IOException {

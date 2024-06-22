@@ -1,4 +1,6 @@
-package compiler.syntactic.ast;
+package compiler.syntactic.ast.node;
+
+import compiler.syntactic.ast.Visitor;
 
 public class Assignment extends Command {
     private final Identifier identifier;

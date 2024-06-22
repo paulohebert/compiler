@@ -1,4 +1,6 @@
-package compiler.syntactic.ast;
+package compiler.syntactic.ast.node;
+
+import compiler.syntactic.ast.Visitor;
 
 public class SimpleExpression extends AST {
     private final Term term;

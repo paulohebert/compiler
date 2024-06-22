@@ -1,11 +1,12 @@
-package compiler.syntactic.ast;
+package compiler.syntactic.ast.node;
 
 import compiler.lexical.Token;
+import compiler.syntactic.ast.Visitor;
 
-public class MultiplyOperator extends AST {
+public class RelationalOperator extends AST {
     private final Token operator;
 
-    public MultiplyOperator(Token operator) {
+    public RelationalOperator(Token operator) {
         this.operator = operator;
     }
 
@@ -15,6 +16,6 @@ public class MultiplyOperator extends AST {
 
     @Override
     public void visit(Visitor v) {
-        v.visitMultiplyOperator(this);
+        v.visitRelationalOperator(this);
     }
 }
