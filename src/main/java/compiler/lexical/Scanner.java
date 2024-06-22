@@ -1,6 +1,7 @@
 package compiler.lexical;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -9,116 +10,112 @@ public class Scanner {
 
     private char currentChar = '\0';
     private StringBuffer currentSpelling = new StringBuffer();
-    private Token currentToken;
 
     private int line = 0;
     private int column = 0;
 
-    private void take(char expectedChar) throws IOException, Exception {
-        if (this.currentChar == expectedChar) {
-            takeIt();
-        } else {
-            throw new Exception(
-                    "ERRO: Era esperado um \"" + expectedChar + "\", mas foi encontrado um \"" + currentChar + "\".");
+    public Scanner(String filePath) {
+        try {
+            /* Abre o Arquivo para leitura */
+            this.reader = new BufferedReader(new FileReader(filePath));
+            if (this.reader.ready())
+                this.currentChar = (char) this.reader.read(); // Ler o primeiro caracter
+        } catch (FileNotFoundException e) {
+            throw new Error(String.format("Erro - O Arquivo \"%s\" não existe", filePath));
+        } catch (IOException e) {
+            throw new Error(String.format("Erro - Não foi possível ler o arquivo \"%s\"", filePath));
         }
     }
 
+    /* Ler e Adiciona um caracter ao buffer */
     private void takeIt() throws IOException {
         this.currentSpelling.append(this.currentChar);
         this.currentChar = (char) reader.read();
-        this.column++;
+        this.column++; // Avança para próxima coluna
     }
 
+    /* Limpa o Buffer */
     private void reset() {
         this.currentSpelling.setLength(0);
     }
 
-    public Scanner(String filePath) throws IOException {
-        this.reader = new BufferedReader(new FileReader(filePath));
-        this.currentChar = (char) this.reader.read();
-    }
-
+    /* Obtém o próximo token */
     public Token scan() throws IOException {
         while (scanSeparator())
             ;
         reset();
-        int startColumn = column;
-        currentToken = scanToken();
-        currentToken.setPosition(line, startColumn);
-        return currentToken;
+        return new Token(scanToken(), currentSpelling.toString(), line, column - currentSpelling.length());
     }
 
-    private Token scanToken() throws IOException {
+    /* Identifica o Tipo do Token */
+    private Token.Kind scanToken() throws IOException {
         if (Character.isLetter(currentChar)) {
+            /* <letter> ::= a | b | c | ...| z */
             do {
                 takeIt();
-            } while (Character.isLetterOrDigit(currentChar));
+            } while (Character.isLetterOrDigit(currentChar)); // (<letter> | <digit>)*
             return Token.fromString(currentSpelling.toString());
         } else if (Character.isDigit(currentChar)) {
+            /* <digit> ::= 0 | 1| 2 | ... | 9 */
             do {
                 takeIt();
-            } while (Character.isDigit(currentChar));
-            if (currentChar == '.') {
-                do {
-                    takeIt();
-                } while (Character.isDigit(currentChar));
-                return Token.FLOAT_LITERAL.value(currentSpelling.toString());
-            }
-            return Token.INTEGER_LITERAL.value(currentSpelling.toString());
+            } while (Character.isDigit(currentChar)); // (<digit>)*
+            return Token.Kind.INTEGER_LITERAL;
         } else {
             switch (currentChar) {
                 case '+':
                     takeIt();
-                    return Token.PLUS;
+                    return Token.Kind.PLUS;
                 case '-':
                     takeIt();
-                    return Token.MINUS;
+                    return Token.Kind.MINUS;
                 case '*':
                     takeIt();
-                    return Token.ASTERISK;
+                    return Token.Kind.ASTERISK;
                 case '/':
                     takeIt();
-                    return Token.SLASH;
+                    return Token.Kind.SLASH;
                 case '=':
                     takeIt();
-                    return Token.EQUAL;
+                    return Token.Kind.EQUAL;
                 case '>':
                     takeIt();
-                    return Token.GREATER;
+                    return Token.Kind.GREATER;
                 case '<':
                     takeIt();
-                    return Token.LESS;
+                    return Token.Kind.LESS;
                 case ';':
                     takeIt();
-                    return Token.SEMICOLON;
+                    return Token.Kind.SEMICOLON;
                 case ':':
                     takeIt();
                     if (currentChar == '=') {
                         takeIt();
-                        return Token.BECOMES;
+                        return Token.Kind.BECOMES;
                     }
-                    return Token.COLON;
+                    return Token.Kind.COLON;
                 case ',':
                     takeIt();
-                    return Token.COMMA;
+                    return Token.Kind.COMMA;
                 case '.':
                     takeIt();
-                    return Token.DOT;
+                    return Token.Kind.DOT;
                 case '(':
                     takeIt();
-                    return Token.LEFT_PARENTHESIS;
+                    return Token.Kind.LEFT_PARENTHESIS;
                 case ')':
                     takeIt();
-                    return Token.RIGHT_PARENTHESIS;
+                    return Token.Kind.RIGHT_PARENTHESIS;
                 case Character.MAX_VALUE: // FIM DE ARQUIVO
                     reader.close();
-                    return Token.EOF;
+                    return Token.Kind.EOF;
                 default:
-                    return Token.ERROR;
+                    return Token.Kind.ERROR;
             }
         }
     }
 
+    /* Ignora os caracteres que separam os tokens */
     private boolean scanSeparator() throws IOException {
         switch (currentChar) {
             case '\n':

@@ -5,7 +5,7 @@ var x : integer;
 var y : integer;
 
 begin 
-    if test then
+    if test = true then
         y := 1;
     x := 2 + y;
 end .

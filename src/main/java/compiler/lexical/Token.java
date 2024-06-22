@@ -1,89 +1,93 @@
 package compiler.lexical;
 
-public enum Token {
-    EOF("<eof>"),
-    ERROR("<error>"),
-
-    /* <identifier> ::= <letter> | <identifier> <letter> | <identifier> <digit> */
-    IDENTIFIER("<identifier>"),
-
-    /* <integer-literal> ::= <digit> | <integer-literal> <digit> */
-    INTEGER_LITERAL("<integer-literal>"),
-
-    /*
-     * <float-literal> ::= <integer-literal> . <integer-literal>
-     * | <integer-literal> .
-     * | . <integer-literal>
-     */
-    FLOAT_LITERAL("<float-literal>"),
-
-    /* <boolean-literal> */
-    TRUE("true"),
-    FALSE("false"),
-
-    /* <program> ::= program <identifier> ; <body> . */
-    PROGRAM("program"),
-
-    /* <compound statement> ::= begin <statement>{ ; <statement> } end */
-    BEGIN("begin"),
-    END("end"),
-
-    /* <variable declaration> ::= var <identifier> : <type> */
-    VAR("var"),
-    INTEGER("integer"),
-    BOOLEAN("boolean"),
-
-    /* <if statement> ::= if <exp> then <statement> (else <statement> | <empty>) */
-    IF("if"),
-    THEN("then"),
-    ELSE("else"),
-
-    /* <assignment statement> ::= <variable> := <expression> */
-    BECOMES(":="),
-
-    /* <adding operator> ::= + | - | or */
-    PLUS("+"),
-    MINUS("-"),
-    OR("or"),
-
-    /* <multiplying operator> ::= * | / | and */
-    ASTERISK("*"),
-    SLASH("/"),
-    AND("and"),
-
-    /* <relational operator> ::= < | > | = */
-    EQUAL("="),
-    GREATER(">"),
-    LESS("<"),
-
-    /* <while statement> ::= while <expression> do <statement> */
-    DO("do"),
-    WHILE("while"),
-
-    /* <special symbol> */
-    SEMICOLON(";"),
-    COLON(":"),
-    COMMA(","),
-    DOT("."),
-    LEFT_PARENTHESIS("("),
-    RIGHT_PARENTHESIS(")");
-
-    private String spelling;
-    private int line;
-    private int column;
-
-    private Token(String spelling) {
-        this.spelling = spelling;
-        this.line = this.column = -1;
+public class Token {
+    public static enum Kind {
+        EOF,
+        ERROR,
+        IDENTIFIER,
+        INTEGER_LITERAL,
+        TRUE,
+        FALSE,
+        PROGRAM,
+        BEGIN,
+        END,
+        VAR,
+        INTEGER,
+        BOOLEAN,
+        IF,
+        THEN,
+        ELSE,
+        BECOMES,
+        PLUS,
+        MINUS,
+        OR,
+        ASTERISK,
+        SLASH,
+        AND,
+        EQUAL,
+        GREATER,
+        LESS,
+        DO,
+        WHILE,
+        SEMICOLON,
+        COLON,
+        COMMA,
+        DOT,
+        LEFT_PARENTHESIS,
+        RIGHT_PARENTHESIS;
     }
 
-    public static Token fromString(String spelling) {
-        for (Token token : Token.values()) {
-            if (token.spelling.equals(spelling)) {
-                return token;
-            }
+    private final Kind kind;
+    private final String spelling;
+    private final int line;
+    private final int column;
+
+    public Token(Kind kind, String spelling, int line, int column) {
+        this.kind = kind;
+        this.spelling = spelling;
+        this.line = line;
+        this.column = column;
+    }
+
+    public static Kind fromString(String spelling) {
+        switch (spelling) {
+            case "program":
+                return Kind.PROGRAM;
+            case "begin":
+                return Kind.BEGIN;
+            case "end":
+                return Kind.END;
+            case "var":
+                return Kind.VAR;
+            case "do":
+                return Kind.DO;
+            case "while":
+                return Kind.WHILE;
+            case "if":
+                return Kind.IF;
+            case "then":
+                return Kind.THEN;
+            case "else":
+                return Kind.ELSE;
+            case "and":
+                return Kind.AND;
+            case "or":
+                return Kind.OR;
+            case "true":
+                return Kind.TRUE;
+            case "false":
+                return Kind.FALSE;
+            case "integer":
+                return Kind.INTEGER;
+            case "boolean":
+                return Kind.BOOLEAN;
+            default:
+                return Kind.IDENTIFIER;
         }
-        return Token.IDENTIFIER.value(spelling);
+    }
+
+    public Kind getKind() {
+        return kind;
     }
 
     public String getSpelling() {
@@ -94,33 +98,15 @@ public enum Token {
         return line;
     }
 
-    public void setLine(int line) {
-        this.line = line;
-    }
-
     public int getColumn() {
         return column;
-    }
-
-    public void setColumn(int column) {
-        this.column = column;
-    }
-
-    public void setPosition(int line, int column) {
-        this.line = line;
-        this.column = column;
-    }
-
-    public Token value(String value) {
-        this.spelling = value;
-        return this;
     }
 
     @Override
     public String toString() {
         return String.format(
                 "\033[44;4;1;53m  Token  \033[0m \033[33m%s\033[0m (\033[36m%s\033[0m) - [%d, %d]",
-                this.name(),
+                this.kind.name(),
                 this.spelling,
                 this.line + 1,
                 this.column + 1);

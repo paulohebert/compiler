@@ -8,6 +8,7 @@ import compiler.lexical.Token;
 import compiler.syntactic.ast.AddOperator;
 import compiler.syntactic.ast.Assignment;
 import compiler.syntactic.ast.Body;
+import compiler.syntactic.ast.BooleanLiteral;
 import compiler.syntactic.ast.Command;
 import compiler.syntactic.ast.CommandList;
 import compiler.syntactic.ast.CompoundCommand;
@@ -16,8 +17,8 @@ import compiler.syntactic.ast.Declarations;
 import compiler.syntactic.ast.Expression;
 import compiler.syntactic.ast.Factor;
 import compiler.syntactic.ast.Identifier;
+import compiler.syntactic.ast.IntegerLiteral;
 import compiler.syntactic.ast.Iterative;
-import compiler.syntactic.ast.Literal;
 import compiler.syntactic.ast.MultiplyOperator;
 import compiler.syntactic.ast.Program;
 import compiler.syntactic.ast.RelationalOperator;
@@ -38,7 +39,7 @@ public class Parser {
         // Obtém o Programa
         Program program = parseProgram();
 
-        accept(Token.EOF); // Avalia se chegou no fim do arquivo
+        accept(Token.Kind.EOF); // Avalia se chegou no fim do arquivo
 
         return program; // Retorna o Programa
     }
@@ -53,35 +54,36 @@ public class Parser {
     }
 
     /* Verifica se é o símbolo terminal esperado e avança para o próximo token */
-    private void accept(Token expectedToken) {
-        if (currentToken == expectedToken) {
+    private void accept(Token.Kind expectedTokenKind) {
+        if (currentToken.getKind() == expectedTokenKind) {
             acceptIt();
         } else {
-            throw new Error("\nErro - Era esperado \"" + expectedToken.getSpelling() + "\", mas foi encontrado um \""
-                    + currentToken.getSpelling() + "\"\n");
+            throw new Error(
+                    "\nErro - Era esperado \"" + expectedTokenKind.name() + "\", mas foi encontrado um \""
+                            + currentToken.getSpelling() + "\"\n");
         }
     }
 
     /* <program> ::= program <identifier> ; <body> . */
     private Program parseProgram() {
-        accept(Token.PROGRAM); // Avalia se o token atual é um "program" e avança para o próximo token
+        accept(Token.Kind.PROGRAM); // Avalia se o token atual é um "program" e avança para o próximo token
 
         // Obtém o Identificador do Programa
         Identifier identifier = parseIdentifier();
 
-        accept(Token.SEMICOLON); // Avalia se o token atual é um ";" e avança para o próximo token
+        accept(Token.Kind.SEMICOLON); // Avalia se o token atual é um ";" e avança para o próximo token
 
         // Obtém o Corpo do Programa
         Body body = parseBody();
 
-        accept(Token.DOT); // Avalia se o token atual é um "." e avança para o próximo token
+        accept(Token.Kind.DOT); // Avalia se o token atual é um "." e avança para o próximo token
         return new Program(identifier, body); // Retorna o programa
     }
 
     /* <identifier> ::= <letter> | <identifier> <letter> | <identifier> <digit> */
     private Identifier parseIdentifier() {
         Token idToken = currentToken; // Salva o token atual
-        accept(Token.IDENTIFIER); // Avalia se o token atual é um Identificador e avança para o próximo token
+        accept(Token.Kind.IDENTIFIER); // Avalia se o token atual é um Identificador e avança para o próximo token
         return new Identifier(idToken); // Retorna o Identificador
     }
 
@@ -105,11 +107,11 @@ public class Parser {
         Declarations declarations = new Declarations(); // Cria uma Lista de Declarações de Variáveis
 
         // Verifica se o token atual é uma declaração de variável
-        while (currentToken == Token.VAR) {
+        while (currentToken.getKind() == Token.Kind.VAR) {
             // Obtém a Declaração da Variável
             VariableDeclaration variableDeclaration = parseVariableDeclaration();
 
-            accept(Token.SEMICOLON); // Avalia se o token atual é um ";" e avança para o próximo token
+            accept(Token.Kind.SEMICOLON); // Avalia se o token atual é um ";" e avança para o próximo token
 
             // Adiciona a declaração da variável à lista de declarações
             declarations.add(variableDeclaration);
@@ -120,12 +122,12 @@ public class Parser {
 
     /* <variable-declaration> ::= var <identifier> : <type> */
     private VariableDeclaration parseVariableDeclaration() {
-        accept(Token.VAR); // Avalia se o token atual é um "var" e avança para o próximo token
+        accept(Token.Kind.VAR); // Avalia se o token atual é um "var" e avança para o próximo token
 
         // Obtém o Identificador da Variável
         Identifier identifier = parseIdentifier();
 
-        accept(Token.COLON); // Avalia se o token atual é um ":" e avança para o próximo token
+        accept(Token.Kind.COLON); // Avalia se o token atual é um ":" e avança para o próximo token
 
         // Obtém o Tipo da Variável
         Type type = parseType();
@@ -136,7 +138,7 @@ public class Parser {
     /* <type> ::= integer | boolean */
     private Type parseType() {
         // Avalia se o token atual é um "integer" ou "boolean"
-        switch (currentToken) {
+        switch (currentToken.getKind()) {
             case INTEGER:
             case BOOLEAN:
                 Type type = new Type(currentToken); // Cria um Tipo com o token atual
@@ -150,12 +152,12 @@ public class Parser {
 
     /* <compound-command> ::= begin <command-list> end */
     private CompoundCommand parseCompoundCommand() {
-        accept(Token.BEGIN); // Avalia se o token atual é um "begin" e avança para o próximo token
+        accept(Token.Kind.BEGIN); // Avalia se o token atual é um "begin" e avança para o próximo token
 
         // Obtém uma Lista de Comandos
         CommandList commandList = parseCommandList();
 
-        accept(Token.END); // Avalia se o token atual é um "end" e avança para o próximo token
+        accept(Token.Kind.END); // Avalia se o token atual é um "end" e avança para o próximo token
         return new CompoundCommand(commandList); // Retorna o Comando Composto
     }
 
@@ -168,7 +170,7 @@ public class Parser {
         // Avalia se o token atual é um comando
         while ((command = parseCommand()) != null) {
             commandList.add(command); // Adiciona o Comando na Lista
-            accept(Token.SEMICOLON); // Avalia se o token atual é um ";" e avança para o próximo token
+            accept(Token.Kind.SEMICOLON); // Avalia se o token atual é um ";" e avança para o próximo token
         }
 
         return commandList; // Retorna uma Lista de Comandos
@@ -179,7 +181,7 @@ public class Parser {
      */
     private Command parseCommand() {
         // Avalia qual comando representa o token atual
-        switch (currentToken) {
+        switch (currentToken.getKind()) {
             case BEGIN:
                 // Retorna um Comando Composto
                 return parseCompoundCommand();
@@ -201,19 +203,19 @@ public class Parser {
      * <conditional> ::= if <expression> then <command> ( else <command> | <empty> )
      */
     private Conditional parseConditional() {
-        accept(Token.IF); // Avalia se o token atual é um "if" e avança para o próximo token
+        accept(Token.Kind.IF); // Avalia se o token atual é um "if" e avança para o próximo token
 
         // Obtém a Expressão
         Expression expression = parseExpression();
 
-        accept(Token.THEN); // Avalia se o token atual é um "then" e avança para o próximo token
+        accept(Token.Kind.THEN); // Avalia se o token atual é um "then" e avança para o próximo token
 
         // Obtém o Comando do If
         Command commandIf = parseCommand();
 
         // Avalia se o token atual é um "else"
         Command commandElse = null;
-        if (currentToken == Token.ELSE) {
+        if (currentToken.getKind() == Token.Kind.ELSE) {
             acceptIt(); // Avança para o próximo token
 
             // Obtém o Comando do Else
@@ -225,12 +227,12 @@ public class Parser {
 
     /* <iterative> ::= while <expression> do <command> */
     private Iterative parseIterative() {
-        accept(Token.WHILE); // Avalia se o token atual é um "while" e avança para o próximo token
+        accept(Token.Kind.WHILE); // Avalia se o token atual é um "while" e avança para o próximo token
 
         // Obtém a Expressão
         Expression expression = parseExpression();
 
-        accept(Token.DO); // Avalia se o token atual é um "do" e avança para o próximo token
+        accept(Token.Kind.DO); // Avalia se o token atual é um "do" e avança para o próximo token
 
         // Obtém o Comando
         Command command = parseCommand();
@@ -243,7 +245,7 @@ public class Parser {
         // Obtém o Identificador da Variável
         Identifier identifier = parseIdentifier();
 
-        accept(Token.BECOMES); // Avalia se o token atual é um ":=" e avança para o próximo token
+        accept(Token.Kind.BECOMES); // Avalia se o token atual é um ":=" e avança para o próximo token
 
         // Obtém a Expressão
         Expression expression = parseExpression();
@@ -327,7 +329,7 @@ public class Parser {
          * Avalia se o token atual é um identificador, literal ou
          * se precisa analisar uma expressão
          */
-        switch (currentToken) {
+        switch (currentToken.getKind()) {
             case IDENTIFIER:
                 // Retorna o Identificador da Variável
                 return parseIdentifier();
@@ -337,32 +339,43 @@ public class Parser {
                 // Obtém uma Expressão
                 Expression expression = parseExpression();
 
-                accept(Token.RIGHT_PARENTHESIS); // Avalia se o token atual é um ")" e avança para o próximo token
+                accept(Token.Kind.RIGHT_PARENTHESIS); // Avalia se o token atual é um ")" e avança para o próximo token
 
                 return expression; // Retorna a Expressão
+
+            /* <literal> ::= <boolean-literal> | <integer-literal> */
             case TRUE:
             case FALSE:
+                // Retorna o Literal Booleano
+                return parseBooleanLiteral();
             case INTEGER_LITERAL:
-                // Retorna o Literal
-                return parseLiteral();
+                // Retorna o Literal Inteiro
+                return parseIntegerLiteral();
             default:
                 throw new Error("Erro - Nenhum fator foi encontrado\n");
         }
     }
 
-    /* <literal> ::= true | false | <integer-literal> */
-    private Literal parseLiteral() {
-        // Cria um Literal com o token atual
-        Literal literal = new Literal(currentToken);
+    /* <integer-literal> ::= <digit> | <integer-literal> <digit> */
+    private IntegerLiteral parseIntegerLiteral() {
+        Integer integer = Integer.valueOf(currentToken.getSpelling()); // Converte o Spelling do Token em um Integer
         acceptIt(); // Avança para o próximo token
 
-        return literal; // Retorna o Literal
+        return new IntegerLiteral(integer); // Retorna um Literal Inteiro
+    }
+
+    /* <boolean-literal> ::= true | false */
+    private BooleanLiteral parseBooleanLiteral() {
+        Boolean bool = Boolean.valueOf(currentToken.getSpelling()); // Converte o Spelling do Token em um Boolean
+        acceptIt(); // Avança para o próximo token
+
+        return new BooleanLiteral(bool); // Retorna um Literal Booleano
     }
 
     /* <relational-operator> ::= < | > | = */
     private RelationalOperator parseRelationalOperator() {
         // Avalia se o token atual é um "<", ">" ou "="
-        switch (currentToken) {
+        switch (currentToken.getKind()) {
             case LESS:
             case GREATER:
             case EQUAL:
@@ -379,7 +392,7 @@ public class Parser {
     /* <add-operator> ::= + | - | or */
     private AddOperator parseAddOperator() {
         // Avalia se o token atual é um "+", "-" ou "or"
-        switch (currentToken) {
+        switch (currentToken.getKind()) {
             case PLUS:
             case MINUS:
             case OR:
@@ -395,7 +408,7 @@ public class Parser {
     /* <multiply-operator> ::= * | / | and */
     private MultiplyOperator parseMultiplyOperator() {
         // Avalia se o token atual é um "*", "/" ou "and"
-        switch (currentToken) {
+        switch (currentToken.getKind()) {
             case ASTERISK:
             case SLASH:
             case AND:

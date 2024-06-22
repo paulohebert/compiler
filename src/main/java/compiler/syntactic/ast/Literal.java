@@ -1,20 +1,13 @@
 package compiler.syntactic.ast;
 
-import compiler.lexical.Token;
+abstract public class Literal<T> extends Factor {
+    protected T value;
 
-public class Literal extends Factor {
-    private final Token value;
-
-    public Literal(Token value) {
+    public Literal(T value) {
         this.value = value;
     }
 
-    public Token getValue() {
+    public T getValue() {
         return value;
-    }
-
-    @Override
-    public void visit(Visitor v) {
-        v.visitLiteral(this);
     }
 }
