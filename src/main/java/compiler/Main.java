@@ -5,6 +5,7 @@ import java.io.IOException;
 import compiler.lexical.Scanner;
 //import compiler.lexical.Token;
 import compiler.syntactic.Parser;
+import compiler.syntactic.ast.Printer;
 import compiler.syntactic.ast.Program;
 
 public class Main {
@@ -24,6 +25,8 @@ public class Main {
         Program program = new Parser().parse(scanner);
         if (program != null) {
             System.out.println("A sintaxe está correta");
+            Printer printer = new Printer();
+            printer.print(program);
         }
 
     }

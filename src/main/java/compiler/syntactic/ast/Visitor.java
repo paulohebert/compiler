@@ -7,6 +7,8 @@ public interface Visitor {
 
     public void visitBody(Body body);
 
+    public void visitBooleanLiteral(BooleanLiteral booleanLiteral);
+
     public void visitCommandList(CommandList commandList);
 
     public void visitCompoundCommand(CompoundCommand compoundCommand);
@@ -19,9 +21,9 @@ public interface Visitor {
 
     public void visitIdentifier(Identifier identifier);
 
-    public void visitIterative(Iterative iterative);
+    public void visitIntegerLiteral(IntegerLiteral integerLiteral);
 
-    public void visitLiteral(Literal literal);
+    public void visitIterative(Iterative iterative);
 
     public void visitMultiplyOperator(MultiplyOperator multiplyOperator);
 
