@@ -1,11 +1,12 @@
 program example;
 
-var test : boolean;
-var x : integer;
-var y : integer;
+var i : integer;
+var j : integer;
 
 begin 
-    if test = true then
-        y := 1;
-    x := 2 + y;
+    i := 0;
+    j := 10;
+
+    while i < j do
+        i := i + 2;
 end .

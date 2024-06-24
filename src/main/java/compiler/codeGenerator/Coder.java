@@ -1,10 +1,13 @@
 package compiler.codeGenerator;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
+import compiler.cli.Config;
 import compiler.syntactic.ast.Visitor;
 import compiler.syntactic.ast.node.AddOperator;
 import compiler.syntactic.ast.node.Assignment;
@@ -28,18 +31,34 @@ import compiler.syntactic.ast.node.Type;
 import compiler.syntactic.ast.node.VariableDeclaration;
 
 public class Coder implements Visitor {
+    private int labelCounter = 0;
+    private int variables = 0;
+    private OutputStream writer = System.out; // Saída Padrão
 
-    private BufferedOutputStream writer;
-    private int labelCounter;
+    public Coder() throws FileNotFoundException {
+        /* Cria um arquivo de saída caso necessário */
+        String outputFolder = Config.getOutputFolder();
+        if (outputFolder != null) {
+            try {
+                File file = new File(outputFolder, "code.tam");
 
-    public Coder(String outputFileName) throws FileNotFoundException {
-        this.writer = new BufferedOutputStream(new FileOutputStream(outputFileName));
-        this.labelCounter = 0;
+                /* Cria o diretório caso não exista */
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdir();
+                }
+
+                this.writer = new BufferedOutputStream(new FileOutputStream(file));
+            } catch (FileNotFoundException e) {
+                throw new Error("Erro - Não foi possível criar o arquivo de saida para a geração de código");
+            }
+        }
     }
 
     public void encode(Program program) {
         program.visit(this);
-        close();
+
+        if (this.writer != System.out)
+            close();
     }
 
     private String generateLabel() {
@@ -83,6 +102,7 @@ public class Coder implements Visitor {
     public void visitBody(Body body) {
         body.getDeclarations().visit(this);
         body.getCompoundCommand().visit(this);
+        writeLine("POP (0) " + variables);
     }
 
     /* <boolean-literal> ::= true | false */
@@ -247,7 +267,8 @@ public class Coder implements Visitor {
     /* <variable-declaration> ::= var <identifier> : <type> */
     @Override
     public void visitVariableDeclaration(VariableDeclaration variableDeclaration) {
-        writeLine("DECLARE " + variableDeclaration.getIdentifier().getIdName());
+        variables++;
+        writeLine("PUSH 1");
     }
 
     public void close() {

@@ -38,7 +38,11 @@ public class Parser {
         // Obtém o Programa
         Program program = parseProgram();
 
-        accept(Token.Kind.EOF); // Avalia se chegou no fim do arquivo
+        // Avalia se chegou no fim do arquivo
+        if (currentToken.getKind() != Token.Kind.EOF)
+            throw new Error(
+                    "Erro - Era Esperado o fim do arquivo, mas foi encontrado um \"" + currentToken.getSpelling()
+                            + "\"");
 
         return program; // Retorna o Programa
     }
@@ -58,7 +62,7 @@ public class Parser {
             acceptIt();
         } else {
             throw new Error(
-                    "\nErro - Era esperado \"" + expectedTokenKind.name() + "\", mas foi encontrado um \""
+                    "\nErro - Era esperado " + expectedTokenKind.name() + ", mas foi encontrado um \""
                             + currentToken.getSpelling() + "\"\n");
         }
     }

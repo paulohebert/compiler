@@ -1,8 +1,13 @@
 package compiler.syntactic.ast;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import compiler.cli.Config;
 import compiler.syntactic.ast.node.AddOperator;
 import compiler.syntactic.ast.node.Assignment;
 import compiler.syntactic.ast.node.Body;
@@ -26,20 +31,38 @@ import compiler.syntactic.ast.node.VariableDeclaration;
 
 public class Printer implements Visitor {
     private int indentLevel = 0;
-    private OutputStream writer;
+    private OutputStream writer = System.out; // Saída Padrão
 
     public Printer() {
-        this(System.out);
-    }
+        /* Cria um arquivo de saída caso necessário */
+        String outputFolder = Config.getOutputFolder();
+        if (outputFolder != null) {
+            try {
+                File file = new File(outputFolder, "ast.txt");
 
-    public Printer(OutputStream writer) {
-        this.writer = writer;
+                /* Cria o diretório caso não exista */
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdir();
+                }
+
+                this.writer = new BufferedOutputStream(new FileOutputStream(file));
+            } catch (FileNotFoundException e) {
+                throw new Error("Erro - Não foi possível criar o arquivo de saida para a visualização da AST");
+            }
+        }
     }
 
     /* Imprime a AST */
     public void print(Program program) {
-        System.out.println("---> Iniciando impressao da arvore");
         program.visit(this);
+
+        if (this.writer != System.out) {
+            try {
+                this.writer.close();
+            } catch (IOException e) {
+                throw new Error("Erro - Não foi possível finalizar o arquivo de saida para a visualização da AST");
+            }
+        }
     }
 
     /* Escreve na Saída Padrão ou em um Arquivo */
@@ -59,14 +82,18 @@ public class Printer implements Visitor {
     /* Imprime o Nó da Árvore com seu Valor */
     private void output(String node, Object value) {
         printIndent();
-        String txt = node + ": \033[0;93m" + value + "\033[0m\n";
+        String txt = Config.isColor()
+                ? node + ": \033[0;93m" + value + "\033[0m\n"
+                : node + ": " + value + "\n";
         write(txt.getBytes());
     }
 
     /* Imprime o Nó da Árvore */
     private void output(String node) {
         printIndent();
-        String txt = "\033[0;96m" + node + "\033[0m:\n";
+        String txt = Config.isColor()
+                ? "\033[0;96m" + node + "\033[0m:\n"
+                : node + ":\n";
         write(txt.getBytes());
     }
 

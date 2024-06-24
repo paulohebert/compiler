@@ -1,5 +1,7 @@
 package compiler.lexical;
 
+import compiler.cli.Config;
+
 public class Token {
     public static enum Kind {
         EOF,
@@ -104,8 +106,12 @@ public class Token {
 
     @Override
     public String toString() {
+        String msg = Config.isColor()
+                ? "\033[44;4;1;53m  Token  \033[0m \033[33m%s\033[0m (\033[36m%s\033[0m) - [Ln %d, Col %d]\n"
+                : "|  Token  | %s (%s) - [Ln %d, Col %d]\n";
+
         return String.format(
-                "\033[44;4;1;53m  Token  \033[0m \033[33m%s\033[0m (\033[36m%s\033[0m) - [%d, %d]",
+                msg,
                 this.kind.name(),
                 this.spelling,
                 this.line + 1,
