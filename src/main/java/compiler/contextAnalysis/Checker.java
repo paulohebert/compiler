@@ -1,5 +1,6 @@
 package compiler.contextAnalysis;
 
+import compiler.lexical.Token;
 import compiler.syntactic.ast.Visitor;
 import compiler.syntactic.ast.node.*;
 
@@ -42,7 +43,7 @@ public class Checker implements Visitor {
         String type = variableDeclaration.getType().getType().getSpelling();
 
         if (idTable.retrieve(id) != null) {
-            System.err.println("Error: Variable " + id + " already declared.");
+            System.err.println("Error: Variável " + id + " já declarada.");
         } else {
             idTable.enter(id, new IdentificationTable.IdEntry(id, type));
         }
@@ -85,8 +86,13 @@ public class Checker implements Visitor {
 
     @Override
     public void visitConditional(Conditional conditional) {
+        // Visita a expressão condicional
         conditional.getExpression().visit(this);
+
+        // Visita o comando dentro do if
         conditional.getCommandIf().visit(this);
+
+        // Se houver um comando else, visita o comando dentro do else
         if (conditional.getCommandElse() != null) {
             conditional.getCommandElse().visit(this);
         }
@@ -149,6 +155,17 @@ public class Checker implements Visitor {
 
     @Override
     public void visitType(Type type) {
-        // Análise do tipo
+        Token typeName = type.getType();
+
+        if (!isValidType(typeName)) {
+            throw new Error("Erro: Tipo " + typeName + " não é um tipo válido.");
+        }
+
+        // Se você tiver tipos complexos, você pode precisar de lógica adicional aqui.
+    }
+
+    private boolean isValidType(Token typeName) {
+        // Verifica se o tipo é válido (apenas 'int' e 'boolean' neste exemplo)
+        return typeName.equals("int") || typeName.equals("boolean");
     }
 }
