@@ -43,7 +43,6 @@ public class Token {
     private final String spelling;
     private final int line;
     private final int column;
-    public String value;
 
     public Token(Kind kind, String spelling, int line, int column) {
         this.kind = kind;

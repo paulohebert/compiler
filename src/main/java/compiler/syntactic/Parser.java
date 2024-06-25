@@ -63,7 +63,8 @@ public class Parser {
         } else {
             throw new Error(
                     "\nErro - Era esperado " + expectedTokenKind.name() + ", mas foi encontrado um \""
-                            + currentToken.getSpelling() + "\"\n");
+                            + currentToken.getSpelling() + "\" na [Linha " + (currentToken.getLine() + 1) + ", Coluna "
+                            + (currentToken.getColumn() + 1) + "]\n");
         }
     }
 

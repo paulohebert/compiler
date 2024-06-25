@@ -42,19 +42,17 @@ public class Main {
             }
 
             /* Analisador de Contexto */
-
+            Checker checker = new Checker();
+            checker.check(program);
+            System.out.println("(5) - Analise de Contexto Concluída");
             if (Config.getBreakpoint() == Stage.CONTEXT) {
                 System.exit(0);
             }
 
             /* Gerador de Código */
             Coder coder = new Coder();
-            System.out.println("(5) - Geração de Código Concluída");
+            System.out.println("(6) - Geração de Código Concluída");
             coder.encode(program);
-
-            Checker checker = new Checker();
-
-            checker.check(program);
         }
     }
 }
