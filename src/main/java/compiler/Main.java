@@ -6,6 +6,7 @@ import compiler.cli.CLI;
 import compiler.cli.Config;
 import compiler.cli.Stage;
 import compiler.codeGenerator.Coder;
+import compiler.contextAnalysis.Checker;
 import compiler.lexical.Scanner;
 import compiler.syntactic.Parser;
 import compiler.syntactic.ast.Printer;
@@ -50,6 +51,10 @@ public class Main {
             Coder coder = new Coder();
             System.out.println("(5) - Geração de Código Concluída");
             coder.encode(program);
+
+            Checker checker = new Checker();
+
+            checker.check(program);
         }
     }
 }
